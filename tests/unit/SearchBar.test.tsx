@@ -1,21 +1,42 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, it, expect, vi } from 'vitest';
 import SearchBar from '../../src/components/SearchBar';
 
 describe('SearchBar', () => {
-  it('não dispara busca com input vazio', async () => {
+  it('does not call onSearch when the input is empty', async () => {
+    const user = userEvent.setup();
     const onSearch = vi.fn();
+
     render(<SearchBar onSearch={onSearch} />);
-    await userEvent.click(screen.getByRole('button', { name: /buscar/i }));
+
+    expect(screen.getByRole('search')).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Buscar' }));
+
     expect(onSearch).not.toHaveBeenCalled();
   });
 
-  it('dispara busca com o termo digitado', async () => {
+  it('does not call onSearch when the input contains only spaces', async () => {
+    const user = userEvent.setup();
     const onSearch = vi.fn();
+
     render(<SearchBar onSearch={onSearch} />);
-    await userEvent.type(screen.getByLabelText(/buscar cidade/i), 'Lisboa');
-    await userEvent.click(screen.getByRole('button', { name: /buscar/i }));
+
+    await user.type(screen.getByRole('searchbox', { name: 'Cidade' }), '   ');
+    await user.click(screen.getByRole('button', { name: 'Buscar' }));
+
+    expect(onSearch).not.toHaveBeenCalled();
+  });
+
+  it('calls onSearch with the trimmed input value', async () => {
+    const user = userEvent.setup();
+    const onSearch = vi.fn();
+
+    render(<SearchBar onSearch={onSearch} />);
+
+    await user.type(screen.getByRole('searchbox', { name: 'Cidade' }), '  Lisboa  ');
+    await user.click(screen.getByRole('button', { name: 'Buscar' }));
+
+    expect(onSearch).toHaveBeenCalledTimes(1);
     expect(onSearch).toHaveBeenCalledWith('Lisboa');
   });
 });

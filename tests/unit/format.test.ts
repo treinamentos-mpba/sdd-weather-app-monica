@@ -1,18 +1,32 @@
-import { describe, it, expect } from 'vitest';
-import { getDayLabel, getShortDate } from '../../src/lib/format';
+import { formatDayLabel, getDayLabel, getShortDate } from '../../src/lib/format';
 
-describe('format', () => {
-  it('rotula o primeiro e o segundo dia', () => {
-    expect(getDayLabel('2026-06-16', 0)).toBe('Hoje');
-    expect(getDayLabel('2026-06-17', 1)).toBe('Amanhã');
+describe('getDayLabel', () => {
+  it('labels index zero as today', () => {
+    expect(getDayLabel(0, '2026-10-29')).toBe('Hoje');
   });
 
-  it('usa dia da semana para os demais', () => {
-    // 2026-06-18 é uma quinta-feira.
-    expect(getDayLabel('2026-06-18', 2)).toBe('Qui');
+  it('labels index one as tomorrow', () => {
+    expect(getDayLabel(1, '2026-10-30')).toBe('Amanhã');
   });
 
-  it('formata data curta', () => {
-    expect(getShortDate('2026-06-16')).toBe('16 Jun');
+  it('returns the weekday for later forecast indices', () => {
+    expect(getDayLabel(2, '2026-10-31')).toBe('sábado');
+    expect(getDayLabel(4, '2026-11-02')).toBe('segunda-feira');
+  });
+});
+
+describe('getShortDate', () => {
+  it('formats an ISO calendar date as day/month in pt-BR', () => {
+    expect(getShortDate('2026-10-29')).toBe('29/10');
+  });
+
+  it('returns the original value when the date is invalid', () => {
+    expect(getShortDate('2026-02-30')).toBe('2026-02-30');
+  });
+});
+
+describe('formatDayLabel', () => {
+  it('keeps the existing weekday and date label behavior', () => {
+    expect(formatDayLabel('2026-10-29')).toContain('29');
   });
 });
