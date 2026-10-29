@@ -1,12 +1,22 @@
-/** Indicador de carregamento acessível. */
-export default function LoadingState() {
+interface LoadingStateProps {
+  message?: string;
+}
+
+export default function LoadingState({
+  message = 'Carregando dados meteorológicos...',
+}: LoadingStateProps) {
   return (
-    <div role="status" aria-live="polite" className="flex flex-col items-center gap-3 py-16">
+    <div
+      role="status"
+      aria-live="polite"
+      aria-atomic="true"
+      className="flex items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white/5 p-6 text-white/80 backdrop-blur-md"
+    >
       <span
         aria-hidden="true"
-        className="h-10 w-10 animate-spin rounded-full border-4 border-white/20 border-t-accent-500"
+        className="size-5 animate-spin rounded-full border-2 border-white/25 border-t-accent-400"
       />
-      <p className="text-white/60">Carregando o clima…</p>
+      <span>{message}</span>
     </div>
   );
 }
